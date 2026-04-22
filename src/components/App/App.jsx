@@ -1,58 +1,66 @@
 import { useState, useEffect } from 'react';
-import initialContacts from '@/contacts.json';
-import ContactList from '../ContactList';
-import SearchBox from '../SearchBox';
-import ContactForm from '../ContactForm';
+import getImages from '@/components/Services/Api';
+import SearchBar from '../SearchBar';
+import ImageGallery from '../ImageGallery';
+import LoadMoreButton from '../LoadMoreButton';
 import style from './App.module.css';
 
 export default function App() {
-  const [contacts, setContacts] = useState(() => {
-    const saveContacts = window.localStorage.getItem('saved-contacts');
-
-    return saveContacts ? JSON.parse(saveContacts) : initialContacts;
-
-    // После перзагрузки возвращаются initialContacts
-    // if (saveContacts) {
-    //   const parsedContacts = JSON.parse(saveContacts);
-    //   return parsedContacts.length > 0 ? parsedContacts : initialContacts;
-    // }
-    // return initialContacts;
-  });
-  const [filter, setFilter] = useState('');
+  const [imageResults, setImageResults] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchPage, setSearchPage] = useState(1);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    window.localStorage.setItem('saved-contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
-  const visibleContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase()),
-  );
-
-  const addContact = newContact => {
-    const isNamePresent = contacts.some(
-      contact => contact.name.toLowerCase() === newContact.name.toLowerCase(),
-    );
-
-    if (isNamePresent) {
-      alert(`"${newContact.name}" is already in contacts `);
+    if (!searchQuery) {
       return;
     }
 
-    setContacts(prevContacts => [newContact, ...prevContacts]);
+    const fetchImages = async () => {
+      try {
+        setIsLoading(true);
+        const images = await getImages(searchQuery, searchPage);
+        setImageResults(prevImage => [...prevImage, ...images]);
+
+        scrollToBottom();
+      } catch (error) {
+        setError(error.message);
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchImages();
+  }, [searchPage, searchQuery]);
+
+  const addImage = newQuery => {
+    setSearchQuery(newQuery.trim());
+    setImageResults([]);
+    setSearchPage(1);
   };
 
-  const deleteContact = contactId => {
-    setContacts(prevContacts => {
-      return prevContacts.filter(contact => contact.id !== contactId);
+  const loadMoreImages = () => {
+    setSearchPage(prevSearchPage => prevSearchPage + 1);
+  };
+
+  const scrollToBottom = () => {
+    requestAnimationFrame(() => {
+      window.scroll({
+        top: document.body.scrollHeight,
+        behavior: 'smooth',
+      });
     });
   };
 
   return (
     <div className={style.app}>
-      <h1 className={style.title}>Phonebook</h1>
-      <ContactForm onAdd={addContact} />
-      <SearchBox value={filter} onFilter={setFilter} />
-      <ContactList contacts={visibleContacts} onDelete={deleteContact} />
+      <SearchBar onSubmit={addImage} />
+
+      {isLoading ? <p>...Loading</p> : <ImageGallery images={imageResults} />}
+
+      {imageResults.length > 0 && <LoadMoreButton loadMore={loadMoreImages} />}
     </div>
   );
 }

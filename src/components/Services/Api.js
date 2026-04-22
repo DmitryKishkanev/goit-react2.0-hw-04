@@ -10,8 +10,8 @@ const getImages = async (searchQuery, searchPage) => {
     params: {
       query: searchQuery,
       page: searchPage,
-      per_page: 12,
-      orientation: 'horisontal',
+      per_page: 10,
+      orientation: 'landscape',
     },
   });
 
