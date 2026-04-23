@@ -3,6 +3,8 @@ import getImages from '@/components/Services/Api';
 import SearchBar from '../SearchBar';
 import ImageGallery from '../ImageGallery';
 import LoadMoreButton from '../LoadMoreButton';
+import Loader from '../Loader/Loader';
+import ErrorMessage from '../ErrorMessage';
 import style from './App.module.css';
 
 export default function App() {
@@ -58,9 +60,15 @@ export default function App() {
     <div className={style.app}>
       <SearchBar onSubmit={addImage} />
 
-      {isLoading ? <p>...Loading</p> : <ImageGallery images={imageResults} />}
+      {error && <ErrorMessage error={error} />}
 
-      {imageResults.length > 0 && <LoadMoreButton loadMore={loadMoreImages} />}
+      <ImageGallery images={imageResults} />
+
+      {isLoading && <Loader />}
+
+      {imageResults.length > 0 && !isLoading && (
+        <LoadMoreButton loadMore={loadMoreImages} />
+      )}
     </div>
   );
 }
