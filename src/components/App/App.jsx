@@ -5,7 +5,12 @@ import ImageGallery from '../ImageGallery';
 import LoadMoreButton from '../LoadMoreButton';
 import Loader from '../Loader/Loader';
 import ErrorMessage from '../ErrorMessage';
+import ImageModal from '../ImageModal';
+import Modal from 'react-modal';
 import style from './App.module.css';
+
+// указываем корневой элемент приложения для react-modal
+Modal.setAppElement('#root');
 
 export default function App() {
   const [imageResults, setImageResults] = useState([]);
@@ -13,6 +18,8 @@ export default function App() {
   const [searchPage, setSearchPage] = useState(1);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [largeImage, setLargeImage] = useState({});
 
   useEffect(() => {
     if (!searchQuery) {
@@ -47,6 +54,20 @@ export default function App() {
     setSearchPage(prevSearchPage => prevSearchPage + 1);
   };
 
+  const openModal = content => {
+    setShowModal(true);
+    setLargeImage(content);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // const toggleModal = content => {
+  //   setShowModal(prevShowModal => !prevShowModal);
+  //   setLargeImage(content);
+  // };
+
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
       window.scroll({
@@ -62,13 +83,27 @@ export default function App() {
 
       {error && <ErrorMessage error={error} />}
 
-      <ImageGallery images={imageResults} />
+      <ImageGallery images={imageResults} onOpenModal={openModal} />
 
       {isLoading && <Loader />}
 
       {imageResults.length > 0 && !isLoading && (
         <LoadMoreButton loadMore={loadMoreImages} />
       )}
+
+      {/* {showModal && (
+        <ImageModal
+          content={largeImage}
+          onClose={toggleModal}
+          modalIsOpen={showModal}
+        />
+      )} */}
+
+      <ImageModal
+        content={largeImage}
+        onCloseModal={closeModal}
+        modalIsOpen={showModal}
+      />
     </div>
   );
 }
