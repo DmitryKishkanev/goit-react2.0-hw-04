@@ -1,0 +1,9 @@
+.imageModalBox {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.imageModalButton {
+  margin-left: auto;
+}
