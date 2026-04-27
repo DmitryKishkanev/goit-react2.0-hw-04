@@ -91,14 +91,6 @@ export default function App() {
         <LoadMoreButton loadMore={loadMoreImages} />
       )}
 
-      {/* {showModal && (
-        <ImageModal
-          content={largeImage}
-          onClose={toggleModal}
-          modalIsOpen={showModal}
-        />
-      )} */}
-
       <ImageModal
         content={largeImage}
         onCloseModal={closeModal}

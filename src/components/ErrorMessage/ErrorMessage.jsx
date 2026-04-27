@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const ErrorMessage = ({ error }) => {
   return (
     <h2>
@@ -5,6 +7,10 @@ const ErrorMessage = ({ error }) => {
       {error}
     </h2>
   );
+};
+
+ErrorMessage.propTypes = {
+  error: PropTypes.string.isRequired,
 };
 
 export default ErrorMessage;

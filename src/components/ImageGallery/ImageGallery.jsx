@@ -1,9 +1,8 @@
+import PropTypes from 'prop-types';
 import ImageCard from '../ImageCard';
 import style from './ImageGallery.module.css';
 
 const ImageGallery = ({ images, onOpenModal }) => {
-  console.log(images);
-
   return (
     <ul className={style.imagesList}>
       {images.map(image => (
@@ -13,6 +12,22 @@ const ImageGallery = ({ images, onOpenModal }) => {
       ))}
     </ul>
   );
+};
+
+ImageGallery.propTypes = {
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      urls: PropTypes.shape({
+        small: PropTypes.string,
+      }).isRequired,
+      alt_description: PropTypes.string.isRequired,
+      created_at: PropTypes.string,
+      likes: PropTypes.number,
+    }),
+  ).isRequired,
+
+  onOpenModal: PropTypes.func.isRequired,
 };
 
 export default ImageGallery;
